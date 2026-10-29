@@ -71,7 +71,7 @@ localhost ansible_connection=local
         remote_src: true
 ```
 
-![скриншот 1.1](img/скриншот 1.1.png)`
+![скриншот 1.1](img/img-1.1.png)`
 
 #### Решение задания 1.2:
 
