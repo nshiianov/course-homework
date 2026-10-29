@@ -62,7 +62,7 @@ localhost ansible_connection=local
      ansible.builtin.file:
         path: /home/ubuntu/projects/ansible/kafka-extracted
         state: directory
-        mode: '1777'
+        mode: '0755'
 
    - name: Разархивировать пакет kafka
      ansible.builtin.unarchive:
@@ -71,7 +71,7 @@ localhost ansible_connection=local
         remote_src: true
 ```
 
-![скриншот 1.1](img/img-1.1.png)`
+![скриншот 1.1](img/img-1.1.png)
 
 #### Решение задания 1.2:
 
