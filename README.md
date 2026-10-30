@@ -40,14 +40,14 @@
 sudo apt install ansible -y
 ```
 
-2. Создал рабочую директорию для проекта Ansible и файл "inventory.ini"
+2. Создал рабочую директорию для проекта Ansible и файл ansible inverntory "inventory.ini"
 
 ```ini
 [myhosts]
 localhost ansible_connection=local
 ```
 
-3. Создал файл плейбук-а "download_archive.yml"; синтаксис для нужных модулей нашел [тут](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/index.html)
+3. Создал файл ansible playbook "download_archive.yml"; синтаксис для нужных модулей нашел [тут](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/index.html)
 
 ```yml
 - name: скачать kafka
@@ -75,6 +75,44 @@ localhost ansible_connection=local
 
 #### Решение задания 1.2:
 
+1. Создал файл ansible playbook "tuned.yml"
+
+``` yml
+- name: скачать и установить tuned
+  hosts: myhosts
+  become: true
+  tasks:
+
+   - name: убедиться, что tuned установлен последней версии
+     ansible.builtin.apt:
+        name: tuned
+        state: latest
+
+   - name: убедиться, что tuned запущен и работает в автозагрузке
+     ansible.builtin.systemd_service:
+        name: tuned
+        state: started
+        enabled: true
+```
+
+2. При попытке запуска данного playbook-а командой `ansible-playbook -i inventory.ini tuned.yml -K` появляется ошибка:
+
+``` bash
+[ERROR]: Task failed: Timed out waiting for become success or become password prompt.
+>>> Standard Error
+[sudo: [sudo via ansible, key=kggvxbaxpznxwxxeivaqtepdwrqlvjee] password:] Password:
+
+fatal: [localhost]: UNREACHABLE! => {"changed": false, "msg": "Task failed: Timed out waiting for become success or become password prompt.\n>>> Standard Error\n[sudo: [sudo via ansible, key=kggvxbaxpznxwxxeivaqtepdwrqlvjee] password:] Password:", "unreachable": true}
+
+PLAY RECAP ************************************************************************************************************
+localhost                  : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+3. Переключил стандартный `sudo` на `/usr/bin/sudo.ws` командой `sudo update-alternatives --set sudo /usr/bin/sudo.ws`
+
+4. Повторный запуск playbook-а `tuned.yml` прошел успешно
+
+![скриншот 1.2](img/img-1.2.png)
 #### Решение задания 1.3:
 
 ---
