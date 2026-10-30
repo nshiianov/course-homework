@@ -146,18 +146,27 @@ localhost                  : ok=0    changed=0    unreachable=1    failed=0    s
 
 #### Решение 2-го задания:
 
-`Приведите ответ в свободной форме........`
+1. Модифицировал ansible playbook `motd.yml` так, чтобы была использована подстановка фактов в переменную `motd_message`
 
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
+``` yml
+- name: обновить motd (задание 2)
+  hosts: myhosts
+  become: true
 
+  vars:
+     motd_message: "Hostname: {{ ansible_facts.hostname }}\nIP: {{ ansible_facts.default_ipv4.address }}\n\nСистемному администратору — хорошего дня!\n"
 
+  tasks:
+   - name: замена стандартного сообщения motd на переменную motd_message
+     ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd
 ```
-Поле для вставки кода...
 
-```
+2. Вывод команды запуска playbook-а и вывод результата `/etc/motd`
 
-![Название скриншота](ссылка на скриншот)`
+![скриншот 2.1](img/img-2.1.png)
+
 ---
 
 ### Задание 3
