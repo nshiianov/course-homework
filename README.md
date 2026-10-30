@@ -47,7 +47,7 @@ sudo apt install ansible -y
 localhost ansible_connection=local
 ```
 
-3. Создал файл ansible playbook "download_archive.yml"; синтаксис для нужных модулей нашел [тут](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/index.html)
+3. Создал файл ansible playbook `download_archive.yml`; синтаксис для нужных модулей нашел [тут](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/index.html)
 
 ```yml
 - name: скачать kafka
@@ -75,7 +75,7 @@ localhost ansible_connection=local
 
 #### Решение задания 1.2:
 
-1. Создал файл ansible playbook "tuned.yml"
+1. Создал файл ansible playbook `tuned.yml`
 
 ``` yml
 - name: скачать и установить tuned
@@ -113,7 +113,28 @@ localhost                  : ok=0    changed=0    unreachable=1    failed=0    s
 4. Повторный запуск playbook-а `tuned.yml` прошел успешно
 
 ![скриншот 1.2](img/img-1.2.png)
+
 #### Решение задания 1.3:
+
+1. Создал файл ansible playbook `motd.yml`
+
+``` yml
+- name: обновить motd
+  hosts: myhosts
+  become: true
+
+  vars:
+     motd_message: "Это приветствие настроено с помощью Ansible\n"
+
+  tasks:
+   - name: замена стандартного сообщения motd на переменную motd_message
+     ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd
+```
+2. Запустил playbook командой `ansible-playbook -i inventory.ini motd.yml -K`; стандартное сообщение motd успешно заменено на значение переменной `motd_message`
+
+![скриншот 1.3](img/img-1.3.png)
 
 ---
 
