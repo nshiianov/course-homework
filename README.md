@@ -163,7 +163,7 @@ localhost                  : ok=0    changed=0    unreachable=1    failed=0    s
         dest: /etc/motd
 ```
 
-2. Вывод команды запуска playbook-а и вывод результата `/etc/motd`
+2. Вывод команды запуска playbook-а и печать сообщения сформированного `/etc/motd`
 
 ![скриншот 2.1](img/img-2.1.png)
 
@@ -183,15 +183,135 @@ localhost                  : ok=0    changed=0    unreachable=1    failed=0    s
 
 #### Решение 3-го задания:
 
-`Приведите ответ в свободной форме........`
-
-1. `Заполните здесь этапы выполнения, если требуется ....`
-2. `Заполните здесь этапы выполнения, если требуется ....`
-
+1. Создал новый ansible playbook файл `webserver.yml` и структуру для роли для задания:
 
 ```
-Поле для вставки кода...
+ansible/
+ ├── ...
+ ├── webserver.yml
+ └── roles/
+	 └── local-webserver-info
+	    ├── tasks/
+	    │   └── main.yml
+	    ├── handlers/
+	    │   └── main.yml
+	    └── templates/
+	        ├── local-webserver-info.conf.j2
+	        └── index.html.j2
+```
+2. Создал файл `webserver.yml`:
 
+```yml
+- name: настроить веб-сервер с информацией о системе
+  hosts: myhosts
+  become: true
+  roles:
+   - local-webserver-info
 ```
 
-![Название скриншота](ссылка на скриншот)`
+3. Создал файл `tasks/main.yml`:
+
+```yml
+- name: предусмотреть наличие apache
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+
+- name: Настроить конфигурацию сайта Apache
+  ansible.builtin.template:
+    src: local-webserver-info.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Перезапустить Apache
+
+- name: Развернуть веб-страницу
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Запустить Apache и включить автозагрузку
+  ansible.builtin.systemd_service:
+    name: apache2
+    state: started
+    enabled: true
+
+- name: Выполнить ожидающие обработчики до проверки сайта
+  ansible.builtin.meta: flush_handlers
+
+- name: Проверить доступность сайта
+  ansible.builtin.uri:
+    url: http://127.0.0.1/
+    method: GET
+    status_code: 200
+    return_content: true
+  register: website_response
+```
+
+4. Создал файл `handlers/main.yml`:
+
+``` yml
+- name: Перезапустить Apache
+  ansible.builtin.systemd_service:
+    name: apache2
+    state: restarted
+```
+
+5. Создал файл `local-webserver-info.conf.j2`:
+
+```apacheconf
+ <VirtualHost 127.0.0.1:80>
+    ServerName localhost
+    DocumentRoot /var/www/html
+</VirtualHost>
+```
+
+6. Создал файл `index.html.j2`:
+
+``` html
+ <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Характеристики компьютера</title>
+</head>
+<body>
+    <h1>Характеристики компьютера</h1>
+
+    <p><strong>Имя компьютера:</strong> {{ ansible_facts.hostname }}</p>
+
+    <p><strong>IP-адрес:</strong>
+        {{ ansible_facts.default_ipv4.address | default('не определён') }}
+    </p>
+
+    <p><strong>Процессор:</strong>
+        {{ ansible_facts.processor[2] | default('не определён') }}
+    </p>
+
+    <p><strong>Оперативная память:</strong>
+        {{ ansible_facts.memtotal_mb }} MB
+    </p>
+
+    {% set disks = ansible_facts.devices | dict2items
+        | selectattr('key', 'match', '^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+)$')
+        | sort(attribute='key') | list %}
+
+    {% if disks | length > 0 %}
+        <p><strong>Первый диск:</strong>
+            {{ disks[0].key }} — {{ disks[0].value.size }}
+        </p>
+    {% else %}
+        <p>Информация о дисках не найдена.</p>
+    {% endif %}
+</body>
+</html>
+```
+
+7. Запустил роль командой `ansible-playbook -i inventory.ini webserver.yml -K`. Скриншоты, подтверждающие успешный запуск и корректную работу:
+
+![скриншот 3.1](img/img-3.1.png)
+![скриншот 3.2](img/img-3.2.png)
