@@ -16,19 +16,25 @@
 Плейбук для скачивания и распаковки архива: [download_archive.yml](ansible/task-1/download_archive.yml).
 Inventory-файл со списком управляемых хостов: [inventory.ini](ansible/inventory.ini).
 
-![Скриншот 1.1](img/img-1.1.png)
+![Скриншот 1.1.1](img/img-1.1.1.png)
+
+![Скриншот 1.1.2](img/img-1.1.2.png)
 
 ### Решение задания 1.2
 
 Плейбук для установки и настройки службы `tuned`: [tuned.yml](ansible/task-1/tuned.yml).
 
-![Скриншот 1.2](img/img-1.2.png)
+![Скриншот 1.2.1](img/img-1.2.1.png)
+
+![Скриншот 1.2.2](img/img-1.2.2.png)
 
 ### Решение задания 1.3
 
 Плейбук для изменения приветствия системы с помощью переменной: [motd.yml](ansible/task-1/motd.yml).
 
-![Скриншот 1.3](img/img-1.3.png)
+![Скриншот 1.3.1](img/img-1.3.1.png)
+
+![Скриншот 1.3.2](img/img-1.3.2.png)
 
 ---
 
@@ -43,6 +49,8 @@ Inventory-файл со списком управляемых хостов: [inv
 Плейбук с использованием Ansible facts: [motd.yml](ansible/task-2/motd.yml).
 
 ![Скриншот 2.1](img/img-2.1.png)
+
+![Скриншот 2.2](img/img-2.2.png)
 
 ---
 
@@ -64,7 +72,7 @@ Inventory-файл со списком управляемых хостов: [inv
 
 Архив с ролью: [local-webserver-info.tar.gz](ansible/task-3/local-webserver-info.tar.gz).
 
-Структура роли:
+Структура архива:
 ```
 local-webserver-info.tar.gz
 └── local-webserver-info/
