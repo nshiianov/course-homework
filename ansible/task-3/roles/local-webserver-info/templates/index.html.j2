@@ -3,34 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Характеристики компьютера</title>
+    <style>
+        dl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            max-width: 800px;
+        }
+        dt {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Характеристики компьютера</h1>
 
-    <p><strong>Имя компьютера:</strong> {{ ansible_facts.hostname }}</p>
+    <dl>
+        <dt>Имя компьютера:</dt>
+        <dd>{{ ansible_facts.hostname }}</dd>
 
-    <p><strong>IP-адрес:</strong>
-        {{ ansible_facts.default_ipv4.address | default('не определён') }}
-    </p>
+        <dt>IP-адрес:</dt>
+        <dd>{{ ansible_facts.default_ipv4.address | default('не определён') }}</dd>
 
-    <p><strong>Процессор:</strong>
-        {{ ansible_facts.processor[2] | default('не определён') }}
-    </p>
+        <dt>Процессор:</dt>
+        <dd>{{ ansible_facts.processor[2] | default('не определён') }}</dd>
 
-    <p><strong>Оперативная память:</strong>
-        {{ ansible_facts.memtotal_mb }} MB
-    </p>
+        <dt>Оперативная память:</dt>
+        <dd>{{ ansible_facts.memtotal_mb }} MB</dd>
 
-    {% set disks = ansible_facts.devices | dict2items
-        | selectattr('key', 'match', '^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+)$')
-        | sort(attribute='key') | list %}
+        {% set disks = ansible_facts.devices | dict2items
+            | selectattr('key', 'match', '^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+)$')
+            | sort(attribute='key') | list %}
 
-    {% if disks | length > 0 %}
-        <p><strong>Первый диск:</strong>
-            {{ disks[0].key }} — {{ disks[0].value.size }}
-        </p>
-    {% else %}
-        <p>Информация о дисках не найдена.</p>
-    {% endif %}
+        {% if disks | length > 0 %}
+            <dt>Первый диск:</dt>
+            <dd>{{ disks[0].key }} — {{ disks[0].value.size }}</dd>
+        {% else %}
+            <dt>Диск:</dt>
+            <dd>Информация не найдена</dd>
+        {% endif %}
+    </dl>
 </body>
 </html>
