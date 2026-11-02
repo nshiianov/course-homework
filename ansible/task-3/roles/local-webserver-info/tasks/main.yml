@@ -1,13 +1,3 @@
-- name: настроить веб-сервер с информацией о системе
-  hosts: myhosts
-  become: true
-  roles:
-   - local-webserver-info
-```
-
-3. Создал файл `tasks/main.yml`:
-
-```yml
 - name: предусмотреть наличие apache
   ansible.builtin.apt:
     name: apache2
