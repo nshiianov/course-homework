@@ -1,0 +1,48 @@
+- name: настроить веб-сервер с информацией о системе
+  hosts: myhosts
+  become: true
+  roles:
+   - local-webserver-info
+```
+
+3. Создал файл `tasks/main.yml`:
+
+```yml
+- name: предусмотреть наличие apache
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+
+- name: Настроить конфигурацию сайта Apache
+  ansible.builtin.template:
+    src: local-webserver-info.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Перезапустить Apache
+
+- name: Развернуть веб-страницу
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Запустить Apache и включить автозагрузку
+  ansible.builtin.systemd_service:
+    name: apache2
+    state: started
+    enabled: true
+
+- name: Выполнить ожидающие обработчики до проверки сайта
+  ansible.builtin.meta: flush_handlers
+
+- name: Проверить доступность сайта
+  ansible.builtin.uri:
+    url: http://127.0.0.1/
+    method: GET
+    status_code: 200
+    return_content: true
+  register: website_response

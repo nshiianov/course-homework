@@ -1,0 +1,12 @@
+- name: обновить motd (задание 2)
+  hosts: myhosts
+  become: true
+
+  vars:
+     motd_message: "Hostname: {{ ansible_facts.hostname }}\nIP: {{ ansible_facts.default_ipv4.address }}\n\nСистемному администратору — хорошего дня!\n"
+
+  tasks:
+   - name: замена стандартного сообщения motd на переменную motd_message
+     ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd

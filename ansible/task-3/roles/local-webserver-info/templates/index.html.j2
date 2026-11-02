@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Характеристики компьютера</title>
+</head>
+<body>
+    <h1>Характеристики компьютера</h1>
+
+    <p><strong>Имя компьютера:</strong> {{ ansible_facts.hostname }}</p>
+
+    <p><strong>IP-адрес:</strong>
+        {{ ansible_facts.default_ipv4.address | default('не определён') }}
+    </p>
+
+    <p><strong>Процессор:</strong>
+        {{ ansible_facts.processor[2] | default('не определён') }}
+    </p>
+
+    <p><strong>Оперативная память:</strong>
+        {{ ansible_facts.memtotal_mb }} MB
+    </p>
+
+    {% set disks = ansible_facts.devices | dict2items
+        | selectattr('key', 'match', '^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+)$')
+        | sort(attribute='key') | list %}
+
+    {% if disks | length > 0 %}
+        <p><strong>Первый диск:</strong>
+            {{ disks[0].key }} — {{ disks[0].value.size }}
+        </p>
+    {% else %}
+        <p>Информация о дисках не найдена.</p>
+    {% endif %}
+</body>
+</html>

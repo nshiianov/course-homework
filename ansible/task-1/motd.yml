@@ -1,0 +1,12 @@
+- name: обновить motd
+  hosts: myhosts
+  become: true
+
+  vars:
+     motd_message: "Добро пожаловать на сервер! Хорошего дня!\nЭто приветствие настроено с помощью Ansible\n"
+
+  tasks:
+   - name: замена стандартного сообщения motd на переменную motd_message
+     ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd

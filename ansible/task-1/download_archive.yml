@@ -1,0 +1,20 @@
+- name: скачать kafka
+  hosts: myhosts
+  tasks:
+  
+   - name: скачать kafka 
+     ansible.builtin.get_url:
+        url: https://www.apache.org/dyn/closer.lua/kafka/4.4.0/kafka-4.4.0-src.tgz?action=download
+        dest: /home/ubuntu/projects/ansible/kafka-4.4.0-src.tgz
+
+   - name: создать директорию для распаковки
+     ansible.builtin.file:
+        path: /home/ubuntu/projects/ansible/kafka-extracted
+        state: directory
+        mode: '0755'
+
+   - name: Разархивировать пакет kafka
+     ansible.builtin.unarchive:
+        src: /home/ubuntu/projects/ansible/kafka-4.4.0-src.tgz
+        dest: /home/ubuntu/projects/ansible/kafka-extracted
+        remote_src: true
